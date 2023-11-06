@@ -1,19 +1,13 @@
-import java.awt.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 public class Scheduler {
     private final String startDate;
     private final String raceDate;
     private int numberOfWeeks;
     private int phase;
-    private int startDay;
-    private int startMonth;
-    private int endDay;
-    private int endMonth;
+    private Date firstDate;
 
 
     public Scheduler(String startDate, String raceDate) throws ParseException {
@@ -22,36 +16,22 @@ public class Scheduler {
         CalculateWeeks();
     }
 
-    public int getWeeks(Date start, Date end) {
-        Calendar a = new GregorianCalendar();
-        Calendar b = new GregorianCalendar();
-
-        a.setTime(start);
-        b.setTime(end);
-
-        return b.get(Calendar.WEEK_OF_YEAR) - a.get(Calendar.WEEK_OF_YEAR);
-    }
-
     private void CalculateWeeks() throws ParseException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        int year = CalenderHelper.getYear(startDate);
+        int month = CalenderHelper.getMonth(startDate);
+        int day = CalenderHelper.getDay(startDate);
 
-        int year = getYear(startDate);
-        int month = getMonth(startDate);
-        int day = getDay(startDate);
-        startDay = day;
-        startMonth = month;
+        firstDate = dateFormat.parse(year + "-" + month + "-" + day);
+        year = CalenderHelper.getYear(raceDate);
+        month = CalenderHelper.getMonth(raceDate);
+        day = CalenderHelper.getDay(raceDate);
+        Date end = dateFormat.parse(year + "-" + month + "-" + day);
+        numberOfWeeks = CalenderHelper.getWeeks(firstDate, end);
+        calculatePhase();
+    }
 
-        Date start = dateFormat.parse(year + "-" + month + "-" + day);
-
-        int year2 = getYear(raceDate);
-        month = getMonth(raceDate);
-        day = getDay(raceDate);
-        endDay = day;
-        endMonth = month;
-
-        Date end = dateFormat.parse(year2 + "-" + month + "-" + day);
-        numberOfWeeks = getWeeks(start, end);
-
+    private void calculatePhase() {
         switch (numberOfWeeks % 8) {
             case 0: {
                 phase = 1;
@@ -75,57 +55,12 @@ public class Scheduler {
         }
     }
 
-    private int getDay(String raceDate) {
-        int indx = 0;
-        int ans = 0;
-        while (!(raceDate.charAt(indx) >= '0' && raceDate.charAt(indx) <= '9'))
-            indx++;
-        ans += raceDate.charAt(indx) - '0';
-        if (raceDate.charAt(indx + 1) >= '0' && raceDate.charAt(indx + 1) <= '9') {
-            ans *= 10;
-            ans += raceDate.charAt(indx + 1) - '0';
-        }
-        return ans;
-    }
-
-    private int getMonth(String startDate) {
-        int indx = startDate.length() - 6;
-        StringBuilder temp = new StringBuilder();
-        while (startDate.charAt(indx) != ' ')
-            temp.insert(0, startDate.charAt(indx--));
-        return switch (temp.toString().toUpperCase()) {
-            case "JANUARY" -> 1;
-            case "FEBRUARY" -> 2;
-            case "MARCH" -> 3;
-            case "APRIL" -> 4;
-            case "MAY" -> 5;
-            case "JUNE" -> 6;
-            case "JULY" -> 7;
-            case "AUGUST" -> 8;
-            case "SEPTEMBER" -> 9;
-            case "OCTOBER" -> 10;
-            case "NOVEMBER" -> 11;
-            case "DECEMBER" -> 12;
-            default -> 0;
-        };
-    }
-
-    private int getYear(String startDate) {
-        int indx = startDate.length() - 1;
-        int ans = 0;
-        while (startDate.charAt(indx) != ' ') {
-            ans *= 10;
-            ans += startDate.charAt(indx--) - '0';
-        }
-        return ans;
-    }
-
     public int getNumberOfWeeks() {
         return numberOfWeeks;
     }
 
-    public void print() throws ParseException {
-        Printer printer = new Printer(phase, numberOfWeeks, startDay, startMonth, endDay, endMonth);
+    public void print() {
+        Printer printer = new Printer(phase, numberOfWeeks, firstDate);
         printer.print();
     }
 }
