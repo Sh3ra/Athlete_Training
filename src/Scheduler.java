@@ -16,11 +16,10 @@ public class Scheduler {
     private int endMonth;
 
 
-    public Scheduler (String startDate,String raceDate) throws ParseException {
-        this.startDate=startDate;
-        this.raceDate=raceDate;
+    public Scheduler(String startDate, String raceDate) throws ParseException {
+        this.startDate = startDate;
+        this.raceDate = raceDate;
         CalculateWeeks();
-
     }
 
     public int getWeeks(Date start, Date end) {
@@ -36,40 +35,40 @@ public class Scheduler {
     private void CalculateWeeks() throws ParseException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-        int year=getYear(startDate);
-        int month=getMonth(startDate);
-        int day=getDay(startDate);
-        startDay=day;
-        startMonth=month;
+        int year = getYear(startDate);
+        int month = getMonth(startDate);
+        int day = getDay(startDate);
+        startDay = day;
+        startMonth = month;
 
-        Date start = dateFormat.parse(year+"-"+month+"-"+day);
+        Date start = dateFormat.parse(year + "-" + month + "-" + day);
 
-        int year2=getYear(raceDate);
-        month=getMonth(raceDate);
-        day=getDay(raceDate);
-        endDay=day;
-        endMonth=month;
+        int year2 = getYear(raceDate);
+        month = getMonth(raceDate);
+        day = getDay(raceDate);
+        endDay = day;
+        endMonth = month;
 
-        Date end = dateFormat.parse(year2+"-"+month+"-"+day);
-        numberOfWeeks = getWeeks(start,end);
+        Date end = dateFormat.parse(year2 + "-" + month + "-" + day);
+        numberOfWeeks = getWeeks(start, end);
 
-        switch (numberOfWeeks%8){
-            case 0:{
-                phase=1;
+        switch (numberOfWeeks % 8) {
+            case 0: {
+                phase = 1;
                 break;
             }
             case 1:
-            case 5:{
-                phase=2;
+            case 5: {
+                phase = 2;
                 break;
             }
             case 2:
-            case 6:{
+            case 6: {
                 phase = 3;
                 break;
             }
             case 3:
-            case 7:{
+            case 7: {
                 phase = 4;
                 break;
             }
@@ -77,23 +76,22 @@ public class Scheduler {
     }
 
     private int getDay(String raceDate) {
-        int indx=0;
-        int ans=0;
-        while(!(raceDate.charAt(indx)>='0' && raceDate.charAt(indx)<='9'))
+        int indx = 0;
+        int ans = 0;
+        while (!(raceDate.charAt(indx) >= '0' && raceDate.charAt(indx) <= '9'))
             indx++;
-        ans+=raceDate.charAt(indx)-'0';
-        if(raceDate.charAt(indx+1)>='0' && raceDate.charAt(indx+1)<='9')
-        {
-            ans*=10;
-            ans+=raceDate.charAt(indx+1)-'0';
+        ans += raceDate.charAt(indx) - '0';
+        if (raceDate.charAt(indx + 1) >= '0' && raceDate.charAt(indx + 1) <= '9') {
+            ans *= 10;
+            ans += raceDate.charAt(indx + 1) - '0';
         }
         return ans;
     }
 
     private int getMonth(String startDate) {
-        int indx=startDate.length()-6;
-        StringBuilder temp= new StringBuilder();
-        while(startDate.charAt(indx)!=' ')
+        int indx = startDate.length() - 6;
+        StringBuilder temp = new StringBuilder();
+        while (startDate.charAt(indx) != ' ')
             temp.insert(0, startDate.charAt(indx--));
         return switch (temp.toString().toUpperCase()) {
             case "JANUARY" -> 1;
@@ -113,12 +111,11 @@ public class Scheduler {
     }
 
     private int getYear(String startDate) {
-        int indx=startDate.length()-1;
-        int ans=0;
-        while(startDate.charAt(indx)!=' ')
-        {
-            ans*=10;
-            ans+=startDate.charAt(indx--)-'0';
+        int indx = startDate.length() - 1;
+        int ans = 0;
+        while (startDate.charAt(indx) != ' ') {
+            ans *= 10;
+            ans += startDate.charAt(indx--) - '0';
         }
         return ans;
     }
@@ -127,7 +124,7 @@ public class Scheduler {
         return numberOfWeeks;
     }
 
-    public void print() {
+    public void print() throws ParseException {
         Printer printer = new Printer(phase, numberOfWeeks, startDay, startMonth, endDay, endMonth);
         printer.print();
     }
